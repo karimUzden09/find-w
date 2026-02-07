@@ -37,7 +37,9 @@ impl Modify for SecurityAddon {
         crate::notes::http::handlers::delete_note,
         crate::groups::http::handlers::create_group,
         crate::groups::http::handlers::list_groups,
-        crate::groups::http::handlers::delete_group
+        crate::groups::http::handlers::delete_group,
+        crate::vk_tokens::http::handlers::add_vk_tokens,
+        crate::vk_tokens::http::handlers::delete_vk_tokens
     ),
     components(schemas(
         crate::error::ErrorBody,
@@ -52,14 +54,19 @@ impl Modify for SecurityAddon {
         crate::notes::http::CreateNoteRequest,
         crate::notes::http::NoteDto,
         crate::groups::http::CreateGroupRequest,
-        crate::groups::http::GroupDto
+        crate::groups::http::GroupDto,
+        crate::vk_tokens::http::AddVkTokensRequest,
+        crate::vk_tokens::http::AddVkTokensResponse,
+        crate::vk_tokens::http::DeleteVkTokensRequest,
+        crate::vk_tokens::http::DeleteVkTokensResponse
     )),
     modifiers(&SecurityAddon),
     tags(
         (name = "Core", description = "Service and account endpoints"),
         (name = "Auth", description = "Authentication endpoints"),
         (name = "Notes", description = "Notes endpoints"),
-        (name = "Groups", description = "User groups endpoints")
+        (name = "Groups", description = "User groups endpoints"),
+        (name = "VK Tokens", description = "VK tokens management endpoints")
     )
 )]
 pub struct ApiDoc;

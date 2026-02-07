@@ -14,12 +14,14 @@ mod error;
 mod extractors;
 mod groups;
 mod notes;
+mod vk_tokens;
 
 #[derive(Clone)]
 pub struct AppState {
     pub db: PgPool,
     pub jwt_enc: EncodingKey,
     pub jwt_dec: DecodingKey,
+    pub vk_token_enc_key: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -46,11 +48,13 @@ async fn main() {
         .await
         .expect("failed to connect to Postgres");
     let jwt_secret = std::env::var("JWT_SECRET").expect("JWT_SECRET must be set");
+    let vk_token_enc_key = std::env::var("VK_TOKEN_ENC_KEY").expect("VK_TOKEN_ENC_KEY must be set");
 
     let state = AppState {
         db,
         jwt_enc: EncodingKey::from_secret(jwt_secret.as_bytes()),
         jwt_dec: DecodingKey::from_secret(jwt_secret.as_bytes()),
+        vk_token_enc_key,
     };
     let app = build_router(state);
     let addr: SocketAddr = "0.0.0.0:3000".parse().unwrap();
