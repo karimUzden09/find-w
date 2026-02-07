@@ -34,7 +34,10 @@ impl Modify for SecurityAddon {
         crate::notes::http::handlers::create_note,
         crate::notes::http::handlers::list_notes,
         crate::notes::http::handlers::get_note,
-        crate::notes::http::handlers::delete_note
+        crate::notes::http::handlers::delete_note,
+        crate::groups::http::handlers::create_group,
+        crate::groups::http::handlers::list_groups,
+        crate::groups::http::handlers::delete_group
     ),
     components(schemas(
         crate::error::ErrorBody,
@@ -47,13 +50,16 @@ impl Modify for SecurityAddon {
         crate::auth::http::RefreshResponse,
         crate::auth::http::LogoutRequest,
         crate::notes::http::CreateNoteRequest,
-        crate::notes::http::NoteDto
+        crate::notes::http::NoteDto,
+        crate::groups::http::CreateGroupRequest,
+        crate::groups::http::GroupDto
     )),
     modifiers(&SecurityAddon),
     tags(
         (name = "Core", description = "Service and account endpoints"),
         (name = "Auth", description = "Authentication endpoints"),
-        (name = "Notes", description = "Notes endpoints")
+        (name = "Notes", description = "Notes endpoints"),
+        (name = "Groups", description = "User groups endpoints")
     )
 )]
 pub struct ApiDoc;

@@ -12,6 +12,7 @@ mod auth;
 mod core;
 mod error;
 mod extractors;
+mod groups;
 mod notes;
 
 #[derive(Clone)]
