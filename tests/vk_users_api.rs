@@ -4,42 +4,8 @@ use axum::http::StatusCode;
 use find_w::vk_users::repo::{self, NewVkUser};
 use sqlx::PgPool;
 use time::{Duration, OffsetDateTime};
-use uuid::Uuid;
 
-use crate::common::TestApp;
-
-async fn create_user(pool: &PgPool) -> Uuid {
-    sqlx::query_scalar!(
-        r#"
-        INSERT INTO users (email, password_hash)
-        VALUES ($1, $2)
-        RETURNING id
-        "#,
-        format!("user-{}@example.test", Uuid::new_v4()),
-        "integration-test-password-hash"
-    )
-    .fetch_one(pool)
-    .await
-    .expect("failed to create test user")
-}
-
-fn sample_vk_user(vk_user_id: i64, first_name: &str, finded_date: OffsetDateTime) -> NewVkUser {
-    NewVkUser {
-        vk_user_id,
-        sex: Some(1),
-        first_name: Some(first_name.to_string()),
-        last_name: Some("Ivanov".to_string()),
-        city: Some("Moscow".to_string()),
-        finded_date,
-        is_closed: Some(false),
-        screen_name: Some(format!("screen_{vk_user_id}")),
-        can_access_closed: Some(true),
-        about: Some(format!("about_{vk_user_id}")),
-        status: Some(format!("status_{vk_user_id}")),
-        bdate: Some("01.01.1990".to_string()),
-        photo: Some(format!("https://img.test/{vk_user_id}.jpg")),
-    }
-}
+use crate::common::{TestApp, create_user, sample_vk_user};
 
 #[sqlx::test]
 async fn vk_users_list_is_paginated_and_scoped_to_current_user(pool: PgPool) {

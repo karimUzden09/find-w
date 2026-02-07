@@ -5,10 +5,12 @@ use axum::{
     body::{Body, to_bytes},
     http::{Method, Request, StatusCode, header},
 };
+use find_w::vk_users::repo::NewVkUser;
 use find_w::{AppState, app::router::build_router};
 use jsonwebtoken::{DecodingKey, EncodingKey};
 use serde_json::{Value, json};
 use sqlx::PgPool;
+use time::OffsetDateTime;
 use tower::ServiceExt;
 use uuid::Uuid;
 
@@ -24,6 +26,39 @@ pub struct TestUser {
     pub email: String,
     pub access_token: String,
     pub refresh_token: String,
+}
+
+pub async fn create_user(db: &PgPool) -> Uuid {
+    sqlx::query_scalar!(
+        r#"
+        INSERT INTO users (email, password_hash)
+        VALUES ($1, $2)
+        RETURNING id
+        "#,
+        format!("user-{}@example.test", Uuid::new_v4()),
+        "integration-test-password-hash"
+    )
+    .fetch_one(db)
+    .await
+    .expect("failed to create test user")
+}
+
+pub fn sample_vk_user(vk_user_id: i64, first_name: &str, finded_date: OffsetDateTime) -> NewVkUser {
+    NewVkUser {
+        vk_user_id,
+        sex: Some(1),
+        first_name: Some(first_name.to_string()),
+        last_name: Some("Ivanov".to_string()),
+        city: Some("Moscow".to_string()),
+        finded_date,
+        is_closed: Some(false),
+        screen_name: Some(format!("screen_{vk_user_id}")),
+        can_access_closed: Some(true),
+        about: Some(format!("about_{vk_user_id}")),
+        status: Some(format!("status_{vk_user_id}")),
+        bdate: Some("01.01.1990".to_string()),
+        photo: Some(format!("https://img.test/{vk_user_id}.jpg")),
+    }
 }
 
 impl TestApp {
