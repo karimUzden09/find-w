@@ -75,7 +75,7 @@ impl IntoResponse for ApiError {
                 StatusCode::NOT_FOUND,
                 Json(ErrorBody {
                     error: "NOT FOUND",
-                    message: "Note not found".to_string(),
+                    message: "Resource not found".to_string(),
                 }),
             )
                 .into_response(),
