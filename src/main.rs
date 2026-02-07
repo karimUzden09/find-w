@@ -1,35 +1,9 @@
 use std::net::SocketAddr;
 
+use find_w::{AppState, app::router::build_router};
 use jsonwebtoken::{DecodingKey, EncodingKey};
-use serde::{Deserialize, Serialize};
-use sqlx::{PgPool, postgres::PgPoolOptions};
+use sqlx::postgres::PgPoolOptions;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
-
-use crate::app::router::build_router;
-
-mod app;
-mod auth;
-mod core;
-mod error;
-mod extractors;
-mod groups;
-mod notes;
-mod vk_tokens;
-
-#[derive(Clone)]
-pub struct AppState {
-    pub db: PgPool,
-    pub jwt_enc: EncodingKey,
-    pub jwt_dec: DecodingKey,
-    pub vk_token_enc_key: String,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct Claims {
-    sub: String, // user_id
-    iat: i64,
-    exp: i64,
-}
 
 #[tokio::main]
 async fn main() {
