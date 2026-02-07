@@ -1,0 +1,14 @@
+use axum::{Router, routing::get};
+
+use crate::AppState;
+use crate::app::docs;
+
+pub fn build_router(state: AppState) -> Router {
+    Router::new()
+        .merge(crate::core::http::routes())
+        .nest("/auth", crate::auth::http::routes())
+        .nest("/notes", crate::notes::http::routes())
+        .route("/docs", get(docs::swagger_ui))
+        .route("/api-docs/openapi.json", get(docs::openapi_spec))
+        .with_state(state)
+}
