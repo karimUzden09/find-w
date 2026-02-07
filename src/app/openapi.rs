@@ -38,6 +38,7 @@ impl Modify for SecurityAddon {
         crate::groups::http::handlers::create_group,
         crate::groups::http::handlers::list_groups,
         crate::groups::http::handlers::delete_group,
+        crate::vk_users::http::handlers::list_vk_users,
         crate::vk_tokens::http::handlers::add_vk_tokens,
         crate::vk_tokens::http::handlers::delete_vk_tokens
     ),
@@ -55,6 +56,7 @@ impl Modify for SecurityAddon {
         crate::notes::http::NoteDto,
         crate::groups::http::CreateGroupRequest,
         crate::groups::http::GroupDto,
+        crate::vk_users::http::VkUserDto,
         crate::vk_tokens::http::AddVkTokensRequest,
         crate::vk_tokens::http::AddVkTokensResponse,
         crate::vk_tokens::http::DeleteVkTokensRequest,
@@ -66,6 +68,7 @@ impl Modify for SecurityAddon {
         (name = "Auth", description = "Authentication endpoints"),
         (name = "Notes", description = "Notes endpoints"),
         (name = "Groups", description = "User groups endpoints"),
+        (name = "VK Users", description = "VK users management endpoints"),
         (name = "VK Tokens", description = "VK tokens management endpoints")
     )
 )]

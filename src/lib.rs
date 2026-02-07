@@ -10,6 +10,7 @@ mod extractors;
 pub mod groups;
 pub mod notes;
 pub mod vk_tokens;
+pub mod vk_users;
 
 #[derive(Clone)]
 pub struct AppState {
