@@ -1,0 +1,27 @@
+use jsonwebtoken::{DecodingKey, EncodingKey};
+use serde::{Deserialize, Serialize};
+use sqlx::PgPool;
+
+pub mod app;
+pub mod auth;
+pub mod core;
+pub mod error;
+mod extractors;
+pub mod groups;
+pub mod notes;
+pub mod vk_tokens;
+
+#[derive(Clone)]
+pub struct AppState {
+    pub db: PgPool,
+    pub jwt_enc: EncodingKey,
+    pub jwt_dec: DecodingKey,
+    pub vk_token_enc_key: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub(crate) struct Claims {
+    sub: String, // user_id
+    iat: i64,
+    exp: i64,
+}
