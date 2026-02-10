@@ -1,47 +1,8 @@
 mod common;
 
-use crate::common::{create_user, sample_vk_user};
-use find_w::{
-    groups::repo::{NewGroup, save_group},
-    vk_posts::repo::{self, NewVkPost, VkPostKey},
-    vk_users::repo::{self as vk_users_repo},
-};
+use crate::common::{create_user, seed_group, seed_vk_user};
+use find_w::vk_posts::repo::{self, NewVkPost, VkPostKey};
 use sqlx::PgPool;
-use time::OffsetDateTime;
-use uuid::Uuid;
-
-async fn seed_group(pool: &PgPool, user_id: Uuid, group_id: i64) {
-    save_group(
-        pool,
-        user_id,
-        NewGroup {
-            group_id,
-            group_name: Some(format!("group-{group_id}")),
-            screen_name: None,
-            is_closed: None,
-            public_type: None,
-            photo_200: None,
-            description: None,
-            members_count: None,
-        },
-    )
-    .await
-    .expect("failed to seed group");
-}
-
-async fn seed_vk_user(pool: &PgPool, user_id: Uuid, vk_user_id: i64) {
-    vk_users_repo::upsert_vk_users(
-        pool,
-        user_id,
-        &[sample_vk_user(
-            vk_user_id,
-            "Ivan",
-            OffsetDateTime::now_utc(),
-        )],
-    )
-    .await
-    .expect("failed to seed vk user");
-}
 
 #[sqlx::test]
 async fn vk_posts_upsert_inserts_and_updates_in_batch(pool: PgPool) {
