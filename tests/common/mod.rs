@@ -156,6 +156,16 @@ impl TestApp {
             .await
     }
 
+    pub async fn patch_json(
+        &self,
+        path: &str,
+        body: Value,
+        bearer: Option<&str>,
+    ) -> (StatusCode, Value) {
+        self.request_json(Method::PATCH, path, Some(body), bearer)
+            .await
+    }
+
     pub async fn get_json(&self, path: &str, bearer: Option<&str>) -> (StatusCode, Value) {
         self.request_json(Method::GET, path, None, bearer).await
     }
