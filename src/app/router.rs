@@ -8,6 +8,7 @@ pub fn build_router(state: AppState) -> Router {
         .merge(crate::core::http::routes())
         .nest("/auth", crate::auth::http::routes())
         .nest("/notes", crate::notes::http::routes())
+        .nest("/settings", crate::user_settings::http::routes())
         .nest("/groups", crate::groups::http::routes())
         .nest("/vk-users", crate::vk_users::http::routes())
         .nest("/vk-tokens", crate::vk_tokens::http::routes())
