@@ -9,6 +9,7 @@ pub mod error;
 mod extractors;
 pub mod groups;
 pub mod notes;
+pub mod vk_comments;
 pub mod vk_post_likes;
 pub mod vk_posts;
 pub mod vk_tokens;
