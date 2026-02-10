@@ -1,75 +1,18 @@
 mod common;
 
-use find_w::{
-    groups::repo::{NewGroup, save_group},
-    vk_post_likes::repo::{self, NewVkPostLike, VkPostLikeKey},
-    vk_posts::repo::{self as vk_posts_repo, NewVkPost},
-    vk_users::repo as vk_users_repo,
-};
+use crate::common::{create_user, seed_group, seed_post, seed_vk_user};
+use find_w::vk_post_likes::repo::{self, NewVkPostLike, VkPostLikeKey};
 use sqlx::PgPool;
 use time::OffsetDateTime;
-use uuid::Uuid;
-
-use crate::common::{create_user, sample_vk_user};
-
-async fn seed_group(pool: &PgPool, user_id: Uuid, group_id: i64) {
-    save_group(
-        pool,
-        user_id,
-        NewGroup {
-            group_id,
-            group_name: Some(format!("group-{group_id}")),
-            screen_name: None,
-            is_closed: None,
-            public_type: None,
-            photo_200: None,
-            description: None,
-            members_count: None,
-        },
-    )
-    .await
-    .expect("failed to seed group");
-}
-
-async fn seed_vk_user(pool: &PgPool, user_id: Uuid, vk_user_id: i64) {
-    vk_users_repo::upsert_vk_users(
-        pool,
-        user_id,
-        &[sample_vk_user(
-            vk_user_id,
-            "Ivan",
-            OffsetDateTime::now_utc(),
-        )],
-    )
-    .await
-    .expect("failed to seed vk user");
-}
-
-async fn seed_post(pool: &PgPool, user_id: Uuid, group_id: i64, from_id: i64, post_id: i64) {
-    vk_posts_repo::upsert_vk_posts(
-        pool,
-        user_id,
-        &[NewVkPost {
-            post_id,
-            group_id,
-            from_id,
-            created_date: 1_700_010_000 + post_id,
-            post_type: Some("post".to_string()),
-            post_text: Some(format!("post-{post_id}")),
-        }],
-    )
-    .await
-    .expect("failed to seed post");
-}
 
 #[sqlx::test]
 async fn vk_post_likes_upsert_inserts_and_updates_in_batch(pool: PgPool) {
     let user_id = create_user(&pool).await;
     seed_group(&pool, user_id, 10).await;
     seed_vk_user(&pool, user_id, 1000).await;
-    seed_post(&pool, user_id, 10, 1000, 1).await;
-    seed_post(&pool, user_id, 10, 1000, 2).await;
-    seed_post(&pool, user_id, 10, 1000, 3).await;
+    seed_post(&pool, user_id, 10, 1000, 1, 1_700_010_001).await;
+    seed_post(&pool, user_id, 10, 1000, 2, 1_700_010_002).await;
+    seed_post(&pool, user_id, 10, 1000, 3, 1_700_010_003).await;
 
     let first_found = OffsetDateTime::now_utc();
     let second_found = first_found + time::Duration::minutes(5);
@@ -138,9 +81,9 @@ async fn vk_post_likes_delete_is_batch_and_scoped_to_user(pool: PgPool) {
     seed_group(&pool, user_two, 20).await;
     seed_vk_user(&pool, user_one, 2000).await;
     seed_vk_user(&pool, user_two, 2000).await;
-    seed_post(&pool, user_one, 20, 2000, 11).await;
-    seed_post(&pool, user_one, 20, 2000, 12).await;
-    seed_post(&pool, user_two, 20, 2000, 11).await;
+    seed_post(&pool, user_one, 20, 2000, 11, 1_700_010_011).await;
+    seed_post(&pool, user_one, 20, 2000, 12, 1_700_010_012).await;
+    seed_post(&pool, user_two, 20, 2000, 11, 1_700_010_111).await;
 
     repo::upsert_vk_post_likes(
         &pool,
@@ -215,8 +158,8 @@ async fn vk_post_likes_cascade_from_vk_posts_and_vk_users(pool: PgPool) {
     seed_group(&pool, user_id, 30).await;
     seed_vk_user(&pool, user_id, 3000).await;
     seed_vk_user(&pool, user_id, 3001).await;
-    seed_post(&pool, user_id, 30, 3000, 21).await;
-    seed_post(&pool, user_id, 30, 3001, 22).await;
+    seed_post(&pool, user_id, 30, 3000, 21, 1_700_010_021).await;
+    seed_post(&pool, user_id, 30, 3001, 22, 1_700_010_022).await;
 
     repo::upsert_vk_post_likes(
         &pool,

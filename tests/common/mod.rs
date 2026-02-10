@@ -7,6 +7,10 @@ use axum::{
 };
 use find_w::vk_users::repo::NewVkUser;
 use find_w::{AppState, app::router::build_router};
+use find_w::{
+    groups::repo::NewGroup, vk_posts::repo as vk_posts_repo, vk_posts::repo::NewVkPost,
+    vk_users::repo as vk_users_repo,
+};
 use jsonwebtoken::{DecodingKey, EncodingKey};
 use serde_json::{Value, json};
 use sqlx::PgPool;
@@ -59,6 +63,63 @@ pub fn sample_vk_user(vk_user_id: i64, first_name: &str, finded_date: OffsetDate
         bdate: Some("01.01.1990".to_string()),
         photo: Some(format!("https://img.test/{vk_user_id}.jpg")),
     }
+}
+
+pub async fn seed_group(db: &PgPool, user_id: Uuid, group_id: i64) {
+    find_w::groups::repo::save_group(
+        db,
+        user_id,
+        NewGroup {
+            group_id,
+            group_name: Some(format!("group-{group_id}")),
+            screen_name: None,
+            is_closed: None,
+            public_type: None,
+            photo_200: None,
+            description: None,
+            members_count: None,
+        },
+    )
+    .await
+    .expect("failed to seed group");
+}
+
+pub async fn seed_vk_user(db: &PgPool, user_id: Uuid, vk_user_id: i64) {
+    vk_users_repo::upsert_vk_users(
+        db,
+        user_id,
+        &[sample_vk_user(
+            vk_user_id,
+            "Ivan",
+            OffsetDateTime::now_utc(),
+        )],
+    )
+    .await
+    .expect("failed to seed vk user");
+}
+
+pub async fn seed_post(
+    db: &PgPool,
+    user_id: Uuid,
+    group_id: i64,
+    from_id: i64,
+    post_id: i64,
+    created_date: i64,
+) {
+    vk_posts_repo::upsert_vk_posts(
+        db,
+        user_id,
+        &[NewVkPost {
+            post_id,
+            group_id,
+            from_id,
+            created_date,
+            post_type: Some("post".to_string()),
+            post_text: Some(format!("post-{post_id}")),
+        }],
+    )
+    .await
+    .expect("failed to seed post");
 }
 
 impl TestApp {
